@@ -125,11 +125,21 @@ of the application to report this information.
 
 ===================== */
 
-var dataset = ""
+var dataset = "https://raw.githubusercontent.com/CPLN-692-401/datasets/master/geojson/philadelphia-garbage-collection-boundaries.geojson"
 var featureGroup;
 
 var myStyle = function(feature) {
-  return {};
+  if (feature.properties["COLLDAY"] == "FRI"){
+  return {fillColor: 'red'};}
+  else if (feature.properties["COLLDAY"] == "THU") {
+  return {fillColor: 'blue'};}
+  else if (feature.properties["COLLDAY"] == "WED") {
+  return {fillColor: 'yellow'};}
+  else if (feature.properties["COLLDAY"] == "TUE") {
+  return {fillColor: 'pink'};}
+  else if (feature.properties["COLLDAY"] == "MON") {
+  return {fillColor: 'purple'};}
+  else {return {fillColor: 'black'};}
 };
 
 var showResults = function() {
@@ -154,17 +164,31 @@ var eachFeatureFunction = function(layer) {
     you can use in your application.
     ===================== */
     console.log(layer.feature);
+    var olddate = (layer.feature.properties["COLLDAY"])
+    var newdate = function(olddate){
+      if (olddate == "MON"){ return "Monday";}
+      else if (olddate == "TUE"){ return "Tuesday";}
+      else if (olddate == "WED"){ return "Wednesday";}
+      else if (olddate == "THU"){ return "Thursday";}
+      else if (olddate == "FRI"){ return "Friday";}
+    }
+    var newday = newdate(olddate)
+    console.log(newday);
+    $(".day-of-week").text(newday);
     showResults();
   });
 };
 
 var myFilter = function(feature) {
-  return true;
+  if (feature.properties.COLLDAY == " "){
+  return false;}
+  else {return true}
 };
 
 $(document).ready(function() {
   $.ajax(dataset).done(function(data) {
     var parsedData = JSON.parse(data);
+    console.log(parsedData);
     featureGroup = L.geoJson(parsedData, {
       style: myStyle,
       filter: myFilter
